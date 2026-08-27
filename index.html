@@ -166,8 +166,16 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;}
   border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text);
   cursor:pointer;font-family:inherit;}
 .intro-btn.on{background:var(--jade);color:#fff;border-color:var(--jade2);}
-.intro-player{margin-top:12px;border-radius:8px;overflow:hidden;background:#000;}
+.intro-player{margin-top:12px;border-radius:8px;overflow:visible;background:#000;}
 .intro-player video{width:100%;height:auto;display:block;vertical-align:top;}
+.intro-player video::-webkit-media-controls-play-button,
+.intro-player video::-webkit-media-controls-mute-button,
+.intro-player video::-webkit-media-controls-overlay-play-button,
+.intro-player video::-webkit-media-controls-volume-control-container{
+  transform:scale(2);
+  transform-origin:center;
+  margin:0 10px;
+}
 </style>
 </head>
 <body>
