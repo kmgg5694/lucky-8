@@ -157,6 +157,17 @@ body{background:var(--bg);color:var(--text);
 body.lang-es .cat-name{font-size:13px;}
 body.lang-es .cat-text{font-size:13px;}
 body.lang-es .fortune{font-size:14px;line-height:2.0;}
+
+.intro-sec{margin:12px;padding:14px 12px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--r);text-align:center;}
+.intro-ttl{font-size:14px;font-weight:700;color:var(--jade2);letter-spacing:2px;margin-bottom:10px;}
+.intro-langs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.intro-btn{padding:8px 10px;min-height:40px;font-size:12px;font-weight:700;
+  border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text);
+  cursor:pointer;font-family:inherit;}
+.intro-btn.on{background:var(--jade);color:#fff;border-color:var(--jade2);}
+.intro-player{margin-top:12px;border-radius:8px;overflow:hidden;background:#000;}
+.intro-player video{width:100%;height:auto;display:block;vertical-align:top;}
 </style>
 </head>
 <body>
@@ -178,6 +189,20 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;}
   <div class="guide-t" id="guideTitle"></div>
   <div class="guide-txt" id="guideText"></div>
   <div class="tips"><span class="tip" id="tipText"></span><br><span class="tip" id="tipText2"></span></div>
+</div>
+
+<div class="intro-sec">
+  <div class="intro-ttl">소개영상</div>
+  <div class="intro-langs">
+    <button type="button" class="intro-btn" data-lang="ko" onclick="playIntro('ko')">한국어</button>
+    <button type="button" class="intro-btn" data-lang="en" onclick="playIntro('en')">English</button>
+    <button type="button" class="intro-btn" data-lang="ja" onclick="playIntro('ja')">日本語</button>
+    <button type="button" class="intro-btn" data-lang="es" onclick="playIntro('es')">Español</button>
+    <button type="button" class="intro-btn" data-lang="hi" onclick="playIntro('hi')">हिन्दी</button>
+  </div>
+  <div class="intro-player hidden" id="introPlayerWrap">
+    <video id="introVideo" controls playsinline preload="none"></video>
+  </div>
 </div>
 
 <div class="btn-row">
@@ -1227,6 +1252,32 @@ function generateQR() {
       if(urlEl) urlEl.textContent = url;
     }
   } catch(e) { /* QR 생성 실패 시 무시 */ }
+}
+
+function playIntro(lang) {
+  var files = {
+    ko: '행운역일진_소개_한국어.mp4',
+    en: '행운역일진_소개_영어.mp4',
+    ja: '행운역일진_소개_일본어.mp4',
+    es: '행운역일진_소개_스페인어.mp4',
+    hi: '행운역일진_소개_힌디어.mp4'
+  };
+  var wrap = document.getElementById('introPlayerWrap');
+  var v = document.getElementById('introVideo');
+  var btns = document.querySelectorAll('.intro-btn');
+  if (!wrap || !v || !files[lang]) return;
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList.toggle('on', btns[i].getAttribute('data-lang') === lang);
+  }
+  v.pause();
+  wrap.classList.remove('hidden');
+  if (v.getAttribute('data-lang') !== lang) {
+    v.setAttribute('data-lang', lang);
+    v.src = 'https://kmgg5694.github.io/nameanalyz/videos/' + encodeURIComponent(files[lang]);
+    v.load();
+  }
+  var p = v.play();
+  if (p && p.catch) p.catch(function(){});
 }
 
 </script>
