@@ -1042,11 +1042,16 @@ function copyLink(){
 function shareNative(){
   var title = '행운역 일진';
   var url = location.href;
-  if (navigator.share) {
-    navigator.share({ title: title, text: title, url: url }).catch(function () {});
-  } else if (typeof showToast === 'function') {
-    showToast('휴대폰에서 누르면 설치된 앱으로 공유됩니다');
+  var txt = title + String.fromCharCode(10) + url;
+  var guide = '📋 링크가 복사되었습니다. 카카오톡·문자에 붙여넣으세요!';
+  var instagram = /Instagram/i.test(navigator.userAgent || '');
+  if (instagram || !navigator.share) {
+    _doCopy(txt, guide);
+    return;
   }
+  navigator.share({ title: title, text: title, url: url }).catch(function () {
+    _doCopy(txt, guide);
+  });
 }
 function showToast(msg){
   const t=document.getElementById('toast');
