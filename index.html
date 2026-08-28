@@ -6,6 +6,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="행운역일진">
+<meta name="theme-color" content="#1a8880">
+<link rel="manifest" href="./manifest.json">
 <title>행운역 일진</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
@@ -1357,5 +1360,6 @@ function playIntro(lang) {
 playIntro(typeof _lang === 'string' ? _lang : 'ko');
 
 </script>
+<script src="./pwa-install.js"></script>
 </body>
 </html>
