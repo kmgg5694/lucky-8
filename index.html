@@ -111,6 +111,7 @@ body{background:var(--bg);color:var(--text);
 .s-fb{background:#1877f2;color:#fff;}
 .s-cp{background:var(--bg3);color:var(--text);border:1px solid var(--border);}
 .s-qr{background:var(--jade);color:#070a10;}
+.s-ns{background:#2c2416;color:#f7e7c6;}
 
 .reset-row{text-align:center;padding:4px 0 16px;}
 .rbtn{background:#c04040;border:2px solid #902020;color:#fff;
@@ -256,6 +257,7 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;}
       <button class="sbtn s-fb" id="sBtnFB" onclick="shareFB()"></button>
       <button class="sbtn s-cp" id="sBtnCP" onclick="copyLink()"></button>
       <button class="sbtn s-qr" id="sBtnQR" onclick="showQR()"></button>
+      <button class="sbtn s-ns" id="sBtnNS" onclick="shareNative()"></button>
     </div>
   </div>
   <div class="reset-row">
@@ -424,7 +426,7 @@ const UI = {
     adTxt:'광고 진행 중… 잠시 후 결과가 공개됩니다',
     secBon:'오전 운세 · 본괘', secByeon:'오후 운세 · 변괘',
     shareTtl:'📤 결과 공유하기',
-    sBtnKK:'💬 카카오톡', sBtnFB:'📘 페이스북', sBtnCP:'🔗 링크복사', sBtnQR:'▦ QR코드',
+    sBtnKK:'💬 카카오톡', sBtnFB:'📘 페이스북', sBtnCP:'🔗 링크복사', sBtnQR:'▦ QR코드', sBtnNS:'📤 공유하기',
     resetBtn:'⟳ &nbsp; 다 시 하 기',
     footer:'© 김만기 이름연구소 · 행운역일진<br>본 운세는 참고용입니다',
     modalTtl:'역점 재사용 안내',
@@ -448,7 +450,7 @@ const UI = {
     secBon:'Morning Fortune · Primary Hexagram',
     secByeon:'Afternoon Fortune · Changing Hexagram',
     shareTtl:'📤 Share Reading',
-    sBtnKK:'💬 KakaoTalk', sBtnFB:'📘 Facebook', sBtnCP:'🔗 Copy Link', sBtnQR:'▦ QR Code',
+    sBtnKK:'💬 KakaoTalk', sBtnFB:'📘 Facebook', sBtnCP:'🔗 Copy Link', sBtnQR:'▦ QR Code', sBtnNS:'📤 Share',
     resetBtn:'⟳ &nbsp; R E S E T',
     footer:'© I-Ching Oracle · Fortune Daily<br>For reference only',
     modalTtl:'Oracle Warning',
@@ -472,7 +474,7 @@ const UI = {
     secBon:'प्रातःकाल दिनफल · मूल षट्कोण',
     secByeon:'सायंकाल दिनफल · परिवर्तन षट्कोण',
     shareTtl:'📤 परिणाम साझा करें',
-    sBtnKK:'💬 काकाओटॉक', sBtnFB:'📘 फेसबुक', sBtnCP:'🔗 लिंक कॉपी', sBtnQR:'▦ QR कोड',
+    sBtnKK:'💬 काकाओटॉक', sBtnFB:'📘 फेसबुक', sBtnCP:'🔗 लिंक कॉपी', sBtnQR:'▦ QR कोड', sBtnNS:'📤 साझा करें',
     resetBtn:'⟳ &nbsp; पुनः करें',
     footer:'© किम मन-गी नाम अनुसंधान संस्थान · भाग्य दिनफल<br>यह दिनफल केवल संदर्भ के लिए है',
     modalTtl:'दिव्य चेतावनी',
@@ -496,7 +498,7 @@ const UI = {
     secBon:'Fortuna Matutina · Hexagrama Principal',
     secByeon:'Fortuna Vespertina · Hexagrama Cambiante',
     shareTtl:'📤 Compartir Resultado',
-    sBtnKK:'💬 KakaoTalk', sBtnFB:'📘 Facebook', sBtnCP:'🔗 Copiar enlace', sBtnQR:'▦ Código QR',
+    sBtnKK:'💬 KakaoTalk', sBtnFB:'📘 Facebook', sBtnCP:'🔗 Copiar enlace', sBtnQR:'▦ Código QR', sBtnNS:'📤 Compartir',
     resetBtn:'⟳ &nbsp; Nueva Consulta',
     footer:'© Instituto Kim Man-gi · I-Ching Diario<br>Solo para referencia',
     modalTtl:'Aviso de Reconsulta',
@@ -519,7 +521,7 @@ const UI = {
     adTxt:'しばらくお待ちください… 結果がもうすぐ表示されます',
     secBon:'午前の運勢 · 本卦', secByeon:'午後の運勢 · 変卦',
     shareTtl:'📤 結果をシェア',
-    sBtnKK:'💬 シェア', sBtnFB:'📘 フェイスブック', sBtnCP:'🔗 URLコピー', sBtnQR:'▦ QRコード',
+    sBtnKK:'💬 シェア', sBtnFB:'📘 フェイスブック', sBtnCP:'🔗 URLコピー', sBtnQR:'▦ QRコード', sBtnNS:'📤 シェア',
     resetBtn:'⟳ &nbsp; や り 直 す',
     footer:'© 金万基命名研究所 · 行運易日進<br>本運勢は参考用です',
     modalTtl:'再占いのご案内',
@@ -566,6 +568,7 @@ function updateUI() {
   if(el('sBtnFB'))      el('sBtnFB').textContent      = t.sBtnFB;
   if(el('sBtnCP'))      el('sBtnCP').textContent      = t.sBtnCP;
   if(el('sBtnQR'))      el('sBtnQR').textContent      = t.sBtnQR;
+  if(el('sBtnNS'))      el('sBtnNS').textContent      = t.sBtnNS;
   if(el('resetBtnTxt')) el('resetBtnTxt').innerHTML   = t.resetBtn;
   if(el('footer'))      el('footer').innerHTML        = t.footer;
   if(el('modalTtl'))    el('modalTtl').textContent    = t.modalTtl;
@@ -1036,6 +1039,15 @@ function shareFB(){
 function copyLink(){
   _doCopy(location.href,'✅ 링크가 복사되었습니다');
 }
+function shareNative(){
+  var title = '행운역 일진';
+  var url = location.href;
+  if (navigator.share) {
+    navigator.share({ title: title, text: title, url: url }).catch(function () {});
+  } else if (typeof showToast === 'function') {
+    showToast('휴대폰에서 누르면 설치된 앱으로 공유됩니다');
+  }
+}
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('on');
@@ -1240,6 +1252,7 @@ function updateUI_JA() {
   if(el('sBtnFB'))      el('sBtnFB').textContent      = t.sBtnFB;
   if(el('sBtnCP'))      el('sBtnCP').textContent      = t.sBtnCP;
   if(el('sBtnQR'))      el('sBtnQR').textContent      = t.sBtnQR;
+  if(el('sBtnNS'))      el('sBtnNS').textContent      = t.sBtnNS;
   if(el('resetBtnTxt')) el('resetBtnTxt').innerHTML   = t.resetBtn;
   if(el('footer'))      el('footer').innerHTML        = t.footer;
   if(el('modalTtl'))    el('modalTtl').textContent    = t.modalTtl;
