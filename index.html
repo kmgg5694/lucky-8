@@ -1026,30 +1026,57 @@ function _showCopyModal(text){
   ov.appendChild(box); document.body.appendChild(ov);
   setTimeout(function(){ ta.focus(); ta.select(); },100);
 }
+function _cardPlain(id){
+  var el=document.getElementById(id);
+  if(!el) return '';
+  return (el.innerText||el.textContent||'').replace(/\n{3,}/g,'\n\n').trim();
+}
+function _shareResultText(){
+  var nl=String.fromCharCode(10);
+  var d=new Date();
+  var ds=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+  var title='오늘의 행운역일진 ('+ds+')';
+  if(_lang==='en') title="Today's Fortune I-Ching ("+ds+")";
+  else if(_lang==='hi') title='आज का भाग्य दिनफल ('+ds+')';
+  else if(_lang==='es') title='I Ching de la fortuna de hoy ('+ds+')';
+  else if(_lang==='ja') title='本日の幸運易日進 ('+ds+')';
+  var head='🎯 '+(bonKey||'')+(byeonKey?' → '+byeonKey:'');
+  var note='※ 일진은 그 순간의 기운이라 매일 새로 확인하는 것이 정확합니다. 앱: kmgg5694.github.io/lucky-8';
+  if(_lang==='en') note='※ Daily fortune reflects the energy of that moment — check anew each day. App: kmgg5694.github.io/lucky-8';
+  else if(_lang==='hi') note='※ दैनिक फल उसी क्षण की ऊर्जा है — प्रतिदिन नया देखें। ऐप: kmgg5694.github.io/lucky-8';
+  else if(_lang==='es') note='※ El oráculo del día es la energía de ese momento; confírmelo de nuevo cada día. App: kmgg5694.github.io/lucky-8';
+  else if(_lang==='ja') note='※ 日進はその瞬間の気なので、毎日あらためて見るのが正確です。アプリ: kmgg5694.github.io/lucky-8';
+  var parts=[title, head];
+  var bonTxt=_cardPlain('bonCard');
+  var byeTxt=_cardPlain('byeonCard');
+  if(bonTxt) parts.push(bonTxt);
+  if(byeTxt) parts.push(byeTxt);
+  parts.push('', note);
+  return parts.join(nl);
+}
 function shareKakao(){
   if(!bonKey) return;
-  var nl=String.fromCharCode(10);
-  var txt='🎯 '+bonKey+' → '+byeonKey+nl+location.href;
-  if(navigator.share){ navigator.share({title:'행운역 일진',text:txt,url:location.href}).catch(function(){ _doCopy(txt,'📋 카카오톡에 붙여넣기!'); }); }
+  var txt=_shareResultText();
+  if(navigator.share){ navigator.share({title:'행운역 일진',text:txt}).catch(function(){ _doCopy(txt,'📋 카카오톡에 붙여넣기!'); }); }
   else { _doCopy(txt,'📋 카카오톡에 붙여넣기!'); }
 }
 function shareFB(){
   window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank');
 }
 function copyLink(){
-  _doCopy(location.href,'✅ 링크가 복사되었습니다');
+  if(!bonKey) return;
+  _doCopy(_shareResultText(),'✅ 결과가 복사되었습니다');
 }
 function shareNative(){
-  var title = '행운역 일진';
-  var url = location.href;
-  var txt = title + String.fromCharCode(10) + url;
-  var guide = '📋 링크가 복사되었습니다. 카카오톡·문자에 붙여넣으세요!';
-  var instagram = /Instagram/i.test(navigator.userAgent || '');
-  if (instagram || !navigator.share) {
+  if(!bonKey) return;
+  var txt=_shareResultText();
+  var guide='📋 결과가 복사되었습니다. 카카오톡·문자에 붙여넣으세요!';
+  var instagram=/Instagram/i.test(navigator.userAgent||'');
+  if(instagram || !navigator.share){
     _doCopy(txt, guide);
     return;
   }
-  navigator.share({ title: title, text: title, url: url }).catch(function () {
+  navigator.share({text:txt}).catch(function(){
     _doCopy(txt, guide);
   });
 }
