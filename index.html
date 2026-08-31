@@ -585,6 +585,7 @@ function updateUI() {
     _renderCard(bonKey, 'bonCard');
     if(typeof byeonKey !== 'undefined' && byeonKey) _renderCard(byeonKey, 'byeonCard');
   }
+  if(typeof cnt!=='undefined' && cnt>=3 && vals && vals[0]) restorePressedUI();
 }
 
 window.addEventListener('DOMContentLoaded', updateUI);
@@ -787,6 +788,33 @@ let cnt=0, vals=[], bonKey=null, byeonKey=null, timer=null;
 const TRI_NAME=['천','택','화','뢰','풍','수','산','지'];
 const TR8=['☰','☱','☲','☳','☴','☵','☶','☷'];  // 1천2택3화4뢰5풍6수7산8지
 
+function resultShareUrl(){
+  if(!vals[0]||!vals[1]||!vals[2]) return location.origin+location.pathname;
+  var g=new URLSearchParams();
+  g.set('c',String(vals[0])); g.set('j',String(vals[1])); g.set('i',String(vals[2])); g.set('r','1');
+  return location.origin+location.pathname+'?'+g.toString();
+}
+function persistResultUrl(){
+  try{ history.replaceState(null,'',resultShareUrl()); }catch(e){}
+}
+function restorePressedUI(){
+  var tn=(_lang==='en')?['Heaven','Lake','Fire','Thunder','Wind','Water','Mountain','Earth']:(_lang==='hi')?['आकाश','झील','अग्नि','वज्र','वायु','जल','पर्वत','पृथ्वी']:(_lang==='es')?['Cielo','Lago','Fuego','Trueno','Viento','Agua','Montaña','Tierra']:(_lang==='ja')?['天','沢','火','雷','風','水','山','地']:TRI_NAME;
+  var el0=document.getElementById('bC'), el1=document.getElementById('bJ'), el2=document.getElementById('bI');
+  if(el0&&vals[0]){ el0.classList.add('btn-done'); el0.querySelector('.lbl').textContent=TR8[vals[0]-1]+' '+vals[0]+' '+tn[vals[0]-1]; }
+  if(el1&&vals[1]){ el1.classList.add('btn-done'); el1.querySelector('.lbl').textContent=TR8[vals[1]-1]+' '+vals[1]+' '+tn[vals[1]-1]; }
+  if(el2&&vals[2]){ el2.classList.add('btn-done'); el2.querySelector('.lbl').textContent=(_lang==='en')?'Line '+vals[2]:(_lang==='hi')?'रेखा '+vals[2]:(_lang==='es')?'Línea '+vals[2]:(_lang==='ja')?vals[2]+'爻':vals[2]+'효'; }
+}
+function restoreResultFromUrl(){
+  var g=new URLSearchParams(location.search);
+  if(g.get('r')!=='1') return;
+  var c=parseInt(g.get('c'),10), j=parseInt(g.get('j'),10), i=parseInt(g.get('i'),10);
+  if(!(c>=1&&c<=8&&j>=1&&j<=8&&i>=1&&i<=6)) return;
+  vals=[c,j,i]; cnt=3;
+  restorePressedUI();
+  showBon();
+  showByeon();
+}
+
 function press(i){
   if(cnt>=3) return;
   const ids=['bC','bJ','bI'];
@@ -850,12 +878,7 @@ function showByeon(){
   document.getElementById('byeonArea').classList.remove('hidden');
   document.getElementById('adBox').classList.add('hidden');
   generateQR();  // ── 변괘 렌더 완료 후 QR 즉시 생성
-  // 변괘 출력 완료 후 QR 자동 생성 (오버레이는 열지 않고 캔버스만 미리 그림)
-  try {
-    var _qc = document.getElementById('qrCanvas');
-    if(_qc) drawQR(_qc, location.href, 200);
-    document.getElementById('qrUrl').textContent = location.href;
-  } catch(e){}
+  persistResultUrl();
 }
 
 function showQR(){
@@ -863,7 +886,7 @@ function showQR(){
     alert('QR 공유 기능은 인터넷 주소(https://)에서만 사용 가능합니다.\n카카오톡 공유 버튼을 이용해 주세요.');
     return;
   }
-  const url = location.href;
+  const url = resultShareUrl();
   document.getElementById('qrUrl').textContent = url;
   document.getElementById('qrOv').classList.add('on');
   const canvas = document.getElementById('qrCanvas');
@@ -966,6 +989,7 @@ function card(key){
 function openModal(){ document.getElementById('modal').classList.add('on'); }
 function closeModal(){ document.getElementById('modal').classList.remove('on'); }
 function doReset(){
+  try{ history.replaceState(null,'',location.pathname); }catch(e){}
   closeModal(); cnt=0; vals=[]; bonKey=null; byeonKey=null;
   if(timer){ clearInterval(timer); timer=null; }
   var _t=(UI[_lang]&&UI[_lang].labelC)?UI[_lang]:UI.ko; var lbls=[_t.labelC,_t.labelJ,_t.labelI];
@@ -1051,7 +1075,7 @@ function _shareResultText(){
   var byeTxt=_cardPlain('byeonCard');
   if(bonTxt) parts.push(bonTxt);
   if(byeTxt) parts.push(byeTxt);
-  parts.push('', note);
+  parts.push('', note, resultShareUrl());
   return parts.join(nl);
 }
 function shareKakao(){
@@ -1061,7 +1085,7 @@ function shareKakao(){
   else { _doCopy(txt,'📋 카카오톡에 붙여넣기!'); }
 }
 function shareFB(){
-  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),'_blank');
+  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(resultShareUrl()),'_blank');
 }
 function copyLink(){
   if(!bonKey) return;
@@ -1308,7 +1332,7 @@ function updateUI_JA() {
 function generateQR() {
   try {
     var canvas = document.getElementById('qrCanvas');
-    var url    = location.href;
+    var url    = resultShareUrl();
     if(canvas && typeof drawQR === 'function') {
       drawQR(canvas, url, 200);
       var urlEl = document.getElementById('qrUrl');
@@ -1402,6 +1426,7 @@ function playIntro(lang) {
   }
 }
 
+restoreResultFromUrl();
 playIntro(typeof _lang === 'string' ? _lang : 'ko');
 
 </script>
