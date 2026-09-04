@@ -536,6 +536,12 @@ const UI = {
 };
 
 let _lang = 'ko';
+(function(){
+  try {
+    var L=(new URLSearchParams(location.search)).get('lang');
+    if(L&&{ko:1,en:1,hi:1,es:1,ja:1}[L]) _lang=L;
+  } catch(e){}
+})();
 
 function setLang(lang) {
   _lang = lang || 'ko';
@@ -588,7 +594,13 @@ function updateUI() {
   if(typeof cnt!=='undefined' && cnt>=3 && vals && vals[0]) restorePressedUI();
 }
 
-window.addEventListener('DOMContentLoaded', updateUI);
+window.addEventListener('DOMContentLoaded', function(){
+  try {
+    var L=(new URLSearchParams(location.search)).get('lang');
+    if(L&&{ko:1,en:1,hi:1,es:1,ja:1}[L]){ setLang(L); return; }
+  } catch(e){}
+  updateUI();
+});
 
 
 // ── EN 카드 렌더 ─────────────────────────────
