@@ -484,7 +484,14 @@ const UI = {
     days:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'],
     fullTitle:'▸ संपूर्ण दिनफल',
     gwaSuffix: function(n){ return n+'वाँ षट्कोण'; },
-    dateText:(y,m,d,day)=>{ function dv(n){return String(n).replace(/[0-9]/g,c=>'०१२३४५६७८९'[c]);} return day+', '+([ 'जन','फ़र','मार्च','अप्र','मई','जून','जुल','अग','सित','अक्त','नव','दिस'][m-1])+' '+dv(d)+', '+dv(y)+' · आज का दिनफल'; }
+    dateText:(y,m,d,day)=>{ function dv(n){return String(n).replace(/[0-9]/g,c=>'०१२३४५६७८९'[c]);} return day+', '+([ 'जन','फ़र','मार्च','अप्र','मई','जून','जुल','अग','सित','अक्त','नव','दिस'][m-1])+' '+dv(d)+', '+dv(y)+' · आज का दिनफल'; },
+    shareAppTitle:'भाग्य दिनफल',
+    shareToast:'📋 काकाओटॉक में चिपकाएं!',
+    copyToast:'✅ परिणाम कॉपी हो गया!',
+    shareNativeCopy:'📋 परिणाम कॉपी हो गया। काकाओटॉक या संदेश में चिपकाएं!',
+    qrHttpsAlert:'QR साझा केवल इंटरनेट पते (https://) पर उपलब्ध है।\nकाकाओटॉक साझा बटन का उपयोग करें।',
+    copyClose:'बंद करें',
+    pageTitle:'भाग्य दिनफल'
   },
   es: {
     mainTitle: '行 運 易 日 進',
@@ -605,6 +612,11 @@ function updateUI() {
   }
   if(typeof cnt!=='undefined' && cnt>=3 && vals && vals[0]) restorePressedUI();
   lockCountryUI(_lang);
+  if(t.pageTitle) document.title = t.pageTitle;
+  else if(_lang==='ko') document.title = '행운역 일진';
+  else if(_lang==='en') document.title = 'Lucky Fortune';
+  else if(_lang==='es') document.title = 'Lucky Fortune';
+  else if(_lang==='ja') document.title = '幸運易日進';
 }
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -909,7 +921,8 @@ function showByeon(){
 
 function showQR(){
   if(location.protocol === 'file:'){
-    alert('QR 공유 기능은 인터넷 주소(https://)에서만 사용 가능합니다.\n카카오톡 공유 버튼을 이용해 주세요.');
+    var t=UI[_lang]||UI.ko;
+    alert(t.qrHttpsAlert||'QR 공유 기능은 인터넷 주소(https://)에서만 사용 가능합니다.\n카카오톡 공유 버튼을 이용해 주세요.');
     return;
   }
   const url = resultShareUrl();
@@ -1069,7 +1082,7 @@ function _showCopyModal(text){
   ta.value=text; ta.readOnly=true;
   ta.style.cssText='width:100%;height:110px;border:1px solid #ddd;border-radius:8px;padding:8px;font-size:13px;resize:none;box-sizing:border-box;';
   var btn=document.createElement('button');
-  btn.textContent='닫기';
+  btn.textContent=(UI[_lang]&&UI[_lang].copyClose)||'닫기';
   btn.style.cssText='margin-top:12px;width:100%;padding:10px;background:#4a90e2;color:#fff;border:none;border-radius:8px;font-size:15px;cursor:pointer;';
   btn.onclick=function(){ document.body.removeChild(ov); };
   box.appendChild(ttl); box.appendChild(ta); box.appendChild(btn);
@@ -1081,6 +1094,14 @@ function _cardPlain(id){
   if(!el) return '';
   return (el.innerText||el.textContent||'').replace(/\n{3,}/g,'\n\n').trim();
 }
+function _hexDisplayName(key){
+  if(!key) return '';
+  if(_lang==='en' && typeof HAENGUN_NAMES_EN!=='undefined') return HAENGUN_NAMES_EN[key]||key;
+  if(_lang==='hi' && typeof HAENGUN_NAMES_HI!=='undefined') return HAENGUN_NAMES_HI[key]||key;
+  if(_lang==='es' && typeof HAENGUN_NAMES_ES!=='undefined') return HAENGUN_NAMES_ES[key]||key;
+  if(_lang==='ja' && typeof HAENGUN_NAMES_JA!=='undefined') return HAENGUN_NAMES_JA[key]||key;
+  return key;
+}
 function _shareResultText(){
   var nl=String.fromCharCode(10);
   var d=new Date();
@@ -1090,7 +1111,7 @@ function _shareResultText(){
   else if(_lang==='hi') title='आज का भाग्य दिनफल ('+ds+')';
   else if(_lang==='es') title='I Ching de la fortuna de hoy ('+ds+')';
   else if(_lang==='ja') title='本日の幸運易日進 ('+ds+')';
-  var head='🎯 '+(bonKey||'')+(byeonKey?' → '+byeonKey:'');
+  var head='🎯 '+_hexDisplayName(bonKey)+(byeonKey?' → '+_hexDisplayName(byeonKey):'');
   var note='※ 일진은 그 순간의 기운이라 매일 새로 확인하는 것이 정확합니다. 앱: kmgg5694.github.io/lucky-8';
   if(_lang==='en') note='※ Daily fortune reflects the energy of that moment — check anew each day. App: kmgg5694.github.io/lucky-8';
   else if(_lang==='hi') note='※ दैनिक फल उसी क्षण की ऊर्जा है — प्रतिदिन नया देखें। ऐप: kmgg5694.github.io/lucky-8';
@@ -1107,20 +1128,25 @@ function _shareResultText(){
 function shareKakao(){
   if(!bonKey) return;
   var txt=_shareResultText();
-  if(navigator.share){ navigator.share({title:'행운역 일진',text:txt}).catch(function(){ _doCopy(txt,'📋 카카오톡에 붙여넣기!'); }); }
-  else { _doCopy(txt,'📋 카카오톡에 붙여넣기!'); }
+  var t=UI[_lang]||UI.ko;
+  var appTitle=t.shareAppTitle||t.mainTitle||'행운역 일진';
+  var toast=t.shareToast||'📋 카카오톡에 붙여넣기!';
+  if(navigator.share){ navigator.share({title:appTitle,text:txt}).catch(function(){ _doCopy(txt,toast); }); }
+  else { _doCopy(txt,toast); }
 }
 function shareFB(){
   window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(resultShareUrl()),'_blank');
 }
 function copyLink(){
   if(!bonKey) return;
-  _doCopy(_shareResultText(),'✅ 결과가 복사되었습니다');
+  var t=UI[_lang]||UI.ko;
+  _doCopy(_shareResultText(), t.copyToast||'✅ 결과가 복사되었습니다');
 }
 function shareNative(){
   if(!bonKey) return;
   var txt=_shareResultText();
-  var guide='📋 결과가 복사되었습니다. 카카오톡·문자에 붙여넣으세요!';
+  var t=UI[_lang]||UI.ko;
+  var guide=t.shareNativeCopy||'📋 결과가 복사되었습니다. 카카오톡·문자에 붙여넣으세요!';
   var instagram=/Instagram/i.test(navigator.userAgent||'');
   if(instagram || !navigator.share){
     _doCopy(txt, guide);
