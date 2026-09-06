@@ -543,13 +543,25 @@ let _lang = 'ko';
   } catch(e){}
 })();
 
+function lockCountryUI(lang) {
+  lang = lang || _lang || 'ko';
+  var idMap = {ko:'lswKo', en:'lswEn', hi:'lswHi', es:'lswEs', ja:'lswJa'};
+  document.querySelectorAll('.lsw-btn').forEach(function(b){
+    var keep = (b.id === idMap[lang]);
+    b.style.display = keep ? '' : 'none';
+    b.classList.toggle('active', keep);
+  });
+  document.querySelectorAll('.intro-btn').forEach(function(b){
+    var keep = (b.getAttribute('data-lang') === lang);
+    b.style.display = keep ? '' : 'none';
+    b.classList.toggle('on', keep);
+  });
+}
+
 function setLang(lang) {
   _lang = lang || 'ko';
   doReset();
-  document.querySelectorAll('.lsw-btn').forEach(function(b){ b.classList.remove('active'); });
-  var idMap = {ko:'lswKo', en:'lswEn', hi:'lswHi', es:'lswEs', ja:'lswJa'};
-  var btn = document.getElementById(idMap[_lang]);
-  if(btn) btn.classList.add('active');
+  lockCountryUI(_lang);
   updateUI();
 }
 
@@ -592,6 +604,7 @@ function updateUI() {
     if(typeof byeonKey !== 'undefined' && byeonKey) _renderCard(byeonKey, 'byeonCard');
   }
   if(typeof cnt!=='undefined' && cnt>=3 && vals && vals[0]) restorePressedUI();
+  lockCountryUI(_lang);
 }
 
 window.addEventListener('DOMContentLoaded', function(){
@@ -600,6 +613,7 @@ window.addEventListener('DOMContentLoaded', function(){
     if(L&&{ko:1,en:1,hi:1,es:1,ja:1}[L]){ setLang(L); return; }
   } catch(e){}
   updateUI();
+  lockCountryUI(_lang);
 });
 
 
@@ -1408,12 +1422,14 @@ function playIntro(lang) {
     es: 'Video de introducción',
     hi: 'परिचय वीडियो'
   };
+  lang = lang || _lang || 'ko';
+  if (typeof lockCountryUI === 'function') lockCountryUI(lang);
   var wrap = document.getElementById('introPlayerWrap');
   var v = document.getElementById('introVideo');
-  var btns = document.querySelectorAll('.intro-btn');
   if (!wrap || !v || !files[lang]) return;
   var ttl = document.getElementById('introTtl');
   if (ttl) ttl.textContent = titles[lang] || titles.ko;
+  var btns = document.querySelectorAll('.intro-btn');
   for (var i = 0; i < btns.length; i++) {
     btns[i].classList.toggle('on', btns[i].getAttribute('data-lang') === lang);
   }
