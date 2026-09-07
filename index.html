@@ -171,7 +171,10 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;}
   cursor:pointer;font-family:inherit;}
 .intro-btn.on{background:var(--jade);color:#fff;border-color:var(--jade2);}
 .intro-player{position:relative;margin-top:12px;border-radius:8px;overflow:hidden;background:#000;}
-.intro-player video{width:100%;height:auto;display:block;vertical-align:top;}
+.intro-player video{
+  width:100%;height:auto;min-height:200px;max-height:360px;aspect-ratio:16/9;
+  object-fit:cover;object-position:center top;display:block;vertical-align:top;
+}
 .intro-player video::-webkit-media-controls-overlay-play-button,
 .intro-player video::-webkit-media-controls-start-playback-button,
 .intro-player video::-webkit-media-controls-play-button,
@@ -187,6 +190,27 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;}
 .intro-media-btn .ic-sound{display:none;}
 .intro-media-btn[data-muted="0"] .ic-muted{display:none;}
 .intro-media-btn[data-muted="0"] .ic-sound{display:block;}
+.intro-caption{
+  position:absolute;left:0;right:0;bottom:14%;z-index:4;
+  overflow:hidden;pointer-events:none;height:1.45em;line-height:1.45;
+}
+.intro-caption-text{
+  display:inline-block;white-space:nowrap;padding-left:100%;
+  font-size:clamp(18px,5.5vw,32px);font-weight:800;letter-spacing:.02em;
+  color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.9),0 0 3px #000;
+  animation:introCapScroll 8s linear infinite;will-change:transform;
+}
+@keyframes introCapScroll{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-100%)}
+}
+@media (max-width:640px){
+  .intro-player video{min-height:220px;height:220px;max-height:240px;aspect-ratio:auto;}
+  .intro-caption{bottom:12%;}
+  .intro-caption-text{font-size:clamp(16px,5.2vw,24px);}
+  .intro-media-btn{width:48px;height:48px;}
+  .intro-media-btn svg{width:24px;height:24px;}
+}
 </style>
 </head>
 <body>
@@ -1393,6 +1417,30 @@ function generateQR() {
   } catch(e) { /* QR 생성 실패 시 무시 */ }
 }
 
+var INTRO_CAPTIONS = {
+  ko: '오늘 당신의 컨디션이 궁금하면 눌러 보세요.',
+  en: "Curious about today's condition? Tap to see.",
+  ja: '今日のコンディションが気になる方は、押してください。',
+  es: '¿Curioso por tu condición de hoy? Pulsa aquí.',
+  hi: 'आज की स्थिति जानना चाहते हैं? देखने के लिए दबाएँ।'
+};
+
+function setIntroCaption(wrap, lang) {
+  if (!wrap) return;
+  var cap = wrap.querySelector('.intro-caption');
+  if (!cap) {
+    cap = document.createElement('div');
+    cap.className = 'intro-caption';
+    cap.setAttribute('aria-hidden', 'true');
+    wrap.appendChild(cap);
+  }
+  cap.innerHTML = '';
+  var span = document.createElement('span');
+  span.className = 'intro-caption-text';
+  span.textContent = INTRO_CAPTIONS[lang] || INTRO_CAPTIONS.ko;
+  cap.appendChild(span);
+}
+
 function bindIntroUnmute(wrap, v) {
   if (!wrap || !v) return;
   v.controls = false;
@@ -1465,6 +1513,7 @@ function playIntro(lang) {
   v.setAttribute('webkit-playsinline', '');
   wrap.classList.remove('hidden');
   bindIntroUnmute(wrap, v);
+  setIntroCaption(wrap, lang);
   function start() {
     v.muted = true;
     var p = v.play();
