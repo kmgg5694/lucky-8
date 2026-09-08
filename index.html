@@ -121,8 +121,16 @@ body{background:var(--bg);color:var(--text);
   margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
 .c-sym{font-size:48px;line-height:1;}
 .c-info .c-no{font-size:13px;color:var(--dim);margin-bottom:3px;}
-.c-info .c-name{font-size:22px;font-weight:700;color:var(--gold);letter-spacing:2px;}
-.fortune{font-size:15px;line-height:2.2;word-break:keep-all;}
+.c-info .c-name{font-size:22px;font-weight:700;color:var(--gold);letter-spacing:2px;
+  word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;}
+.fortune{font-size:15px;line-height:2.2;word-break:keep-all;overflow-wrap:break-word;
+  hyphens:none;-webkit-hyphens:none;}
+.cat-item,.cat-text,.cat-name,.guide-txt,.m-body,.full-title,.footer,.ad-txt,.share-ttl,.app-share-t{
+  word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;}
+/* Global mobile wrap: stop stray hyphen fragments on CJK / auto-translate */
+body,p,span,div,h1,h2,h3,h4,h5,h6,li,td,th,label,a,button{
+  word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;-ms-hyphens:none;}
+.qr-url{word-break:break-all;overflow-wrap:anywhere;}
 .divider{text-align:center;color:var(--dim);font-size:12px;
   letter-spacing:2px;padding:12px 0;}
 
@@ -192,7 +200,7 @@ body{background:var(--bg);color:var(--text);
 
 body.lang-es .cat-name{font-size:13px;}
 body.lang-es .cat-text{font-size:13px;}
-body.lang-es .fortune{font-size:14px;line-height:2.0;}
+body.lang-es .fortune{font-size:14px;line-height:2.0;word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;}
 
 .intro-sec{margin:12px;padding:14px 12px;background:var(--bg2);
   border:1px solid var(--border);border-radius:var(--r);text-align:center;}
@@ -712,17 +720,29 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
 // ── EN 카드 렌더 ─────────────────────────────
+/* Strip soft-hyphens / stray dash fragments that break on mobile wrap & auto-translate */
+function _cleanWrapText(t){
+  if(t==null) return '';
+  return String(t)
+    .replace(/\u00AD/g,'')
+    .replace(/\u200B/g,'')
+    .replace(/\s*[—–−]\s*/g, '. ')
+    .replace(/(^|\s)-\s*(?=[가-힣A-Za-z\u0900-\u097F\u3040-\u30FF])/g, '$1')
+    .replace(/\s{2,}/g,' ')
+    .replace(/\.\s*\./g,'.')
+    .trim();
+}
 function extractCatEN(text, cat) {
   var sentences = text.split(/\.\s*/);
   for (var i = 0; i < cat.enKw.length; i++) {
     var kw = cat.enKw[i].toLowerCase();
     for (var j = 0; j < sentences.length; j++) {
       if (sentences[j].toLowerCase().indexOf(kw) !== -1 && sentences[j].trim().length > 10) {
-        return sentences[j].trim();
+        return _cleanWrapText(sentences[j].trim());
       }
     }
   }
-  return sentences[0] ? sentences[0].trim() : '—';
+  return sentences[0] ? _cleanWrapText(sentences[0].trim()) : '';
 }
 
 function extractCatHI(text, cat) {
@@ -731,11 +751,11 @@ function extractCatHI(text, cat) {
     var kw = cat.hiKw[i];
     for (var j = 0; j < sentences.length; j++) {
       if (sentences[j].indexOf(kw) !== -1 && sentences[j].trim().length > 8) {
-        return sentences[j].trim();
+        return _cleanWrapText(sentences[j].trim());
       }
     }
   }
-  return sentences[0] ? sentences[0].trim() : '—';
+  return sentences[0] ? _cleanWrapText(sentences[0].trim()) : '';
 }
 
 function _renderCard(key, targetId) {
@@ -748,7 +768,7 @@ function _renderCard(key, targetId) {
     return;
   }
   if (_lang === 'hi') {
-    var txt_hi = _getDATA_HI()[key] || '';
+    var txt_hi = _cleanWrapText(_getDATA_HI()[key] || '');
     var sym  = SYM[key] || '☰☰';
     var no   = ORDER.indexOf(key) + 1;
     var hj   = HANJA[key] ? '(' + HANJA[key] + ')' : '';
@@ -774,7 +794,7 @@ function _renderCard(key, targetId) {
   }
   if (_lang === 'es') {
     var t_es = UI.es;
-    var etxt = (typeof _getDATA_ES() !== 'undefined' && _getDATA_ES()[key]) ? _getDATA_ES()[key] : '';
+    var etxt = _cleanWrapText((typeof _getDATA_ES() !== 'undefined' && _getDATA_ES()[key]) ? _getDATA_ES()[key] : '');
     var esym = SYM[key] || '☰☰';
     var eno  = ORDER.indexOf(key) + 1;
     var CATS_ES = [
@@ -802,7 +822,7 @@ function _renderCard(key, targetId) {
       return '<div class="cat-item">'
         +'<span class="cat-num">'+cat.num+'.</span>'
         +'<span class="cat-name">'+cat.name+'</span>'
-        +'<span class="cat-text">'+picked.trim()+'</span>'
+        +'<span class="cat-text">'+_cleanWrapText(picked.trim())+'</span>'
         +'</div>';
     }).join('');
     el.innerHTML =
@@ -826,7 +846,7 @@ function _renderCard(key, targetId) {
     return;
   }
   if (_lang === 'en') {
-    var txt  = _getDATA_EN()[key] || '';
+    var txt  = _cleanWrapText(_getDATA_EN()[key] || '');
     var sym  = SYM[key] || '☰☰';
     var no   = ORDER.indexOf(key) + 1;
     var hj   = HANJA[key] ? '(' + HANJA[key] + ')' : '';
@@ -883,13 +903,13 @@ function extractAllCats(text) {
       const s = sentences.find(s => s.includes(kw) && !used.has(s));
       if (s) { result[cat.num] = s.trim(); used.add(s); break; }
     }
-    if (!result[cat.num]) result[cat.num] = sentences[0] ? sentences[0].trim() : '—';
+    if (!result[cat.num]) result[cat.num] = sentences[0] ? _cleanWrapText(sentences[0].trim()) : '';
   }
   return result;
 }
 function extractCat(text, cat) {
   if (!_catCache.has(text)) _catCache.set(text, extractAllCats(text));
-  return _catCache.get(text)[cat.num] || '—';
+  return _cleanWrapText(_catCache.get(text)[cat.num] || '');
 }
 
 const HANJA = {"건위천": "乾為天", "곤위지": "坤為地", "수뢰둔": "水雷屯", "산수몽": "山水蒙", "수천수": "水天需", "천수송": "天水訟", "지수사": "地水師", "수지비": "水地比", "풍천소축": "風天小畜", "천택리": "天澤履", "지천태": "地天泰", "천지비": "天地否", "천화동인": "天火同人", "화천대유": "火天大有", "지산겸": "地山謙", "뇌지예": "雷地豫", "택뢰수": "澤雷隨", "산풍고": "山風蠱", "지택림": "地澤臨", "풍지관": "風地觀", "화뢰서합": "火雷噬嗑", "산화비": "山火賁", "산지박": "山地剝", "지뢰복": "地雷復", "천뢰무망": "天雷无妄", "산천대축": "山天大畜", "산뢰이": "山雷頤", "택풍대과": "澤風大過", "감위수": "坎為水", "이위화": "離為火", "택산함": "澤山咸", "뇌풍항": "雷風恒", "천산돈": "天山遯", "뇌천대장": "雷天大壯", "화지진": "火地晉", "지화명이": "地火明夷", "풍화가인": "風火家人", "화택규": "火澤睽", "수산건": "水山蹇", "뇌수해": "雷水解", "산택손": "山澤損", "풍뢰익": "風雷益", "택천쾌": "澤天夬", "천풍구": "天風姤", "택지췌": "澤地萃", "지풍승": "地風升", "택수곤": "澤水困", "수풍정": "水風井", "택화혁": "澤火革", "화풍정": "火風鼎", "진위뢰": "震為雷", "간위산": "艮為山", "풍산점": "風山漸", "뇌택귀매": "雷澤歸妹", "뇌화풍": "雷火豊", "화산려": "火山旅", "손위풍": "巽為風", "태위택": "兌為澤", "풍수환": "風水渙", "수택절": "水澤節", "풍택중부": "風澤中孚", "뇌산소과": "雷山小過", "수화기제": "水火旣濟", "화수미제": "火水未濟", "천산둔": "天山遯"};
@@ -1054,8 +1074,8 @@ function showResult(){} // 미사용 (showBon/showByeon으로 대체)
 
 // 극단적 표현 순화 함수
 function soften(txt) {
-  if (!txt) return '—';
-  return txt
+  if (!txt) return '';
+  return _cleanWrapText(txt
     .replace(/도박\s*등은?\s*승리합니다/g, '경쟁에서 유리한 흐름입니다')
     .replace(/도박[은는이가]\s*[^\s]+/g, '투기적 행동은 삼가세요')
     .replace(/여자는\s*실연당할\s*것입니다/g, '연애에서 신중함이 필요합니다')
@@ -1078,13 +1098,13 @@ function soften(txt) {
     .replace(/쓸\s*데\s*없습니다/g, '효과가 제한적일 수 있습니다')
     .replace(/망합니다/g, '어려움에 처할 수 있습니다')
     .replace(/헛수고입니다/g, '결실이 늦어질 수 있습니다')
-    .trim();
+    .trim());
 }
 
 function card(key){
   const sym = SYM[key]||'☰☰';
   const no  = ORDER.indexOf(key)+1;
-  const txt = DATA[key]||'';
+  const txt = soften(DATA[key]||'');
   const catHtml = CATS.map(c=>
     `<div class="cat-item">
       <span class="cat-num">${c.num}.</span>
@@ -1359,7 +1379,7 @@ function extractCatJA(text, cat) {
       }
     }
   }
-  return sentences[0] ? sentences[0].trim() + '。' : '—';
+  return sentences[0] ? _cleanWrapText(sentences[0].trim()) + '。' : '';
 }
 
 // ── 원칙2: _getDataJA — 순수 일본어 운세 데이터 ─────────
@@ -1437,29 +1457,29 @@ function _getDataJA(key) {
 function renderCard_JA(key, targetId) {
   var el = document.getElementById(targetId);
   if (!el) return;
-  var txt  = _getDataJA(key);
+  var txt  = _cleanWrapText(_getDataJA(key));
   var sym  = SYM[key] || '☰☰';
   var no   = ORDER.indexOf(key) + 1;
-  var name = HAENGUN_NAMES_JA[key] || key;
+  var name = _cleanWrapText(HAENGUN_NAMES_JA[key] || key);
   var catHtml = JA_CATS.map(function(cat){
     return '<div class="cat-item">'
       + '<span class="cat-num" style="color:var(--gold);font-weight:700;">'+cat.num+'.</span>'
       + '<span class="cat-name" style="color:var(--gold);font-weight:700;">'+cat.name+'</span>'
-      + '<span class="cat-text">'+extractCatJA(txt, cat)+'</span>'
+      + '<span class="cat-text">'+_cleanWrapText(extractCatJA(txt, cat))+'</span>'
       + '</div>';
   }).join('');
   el.innerHTML =
     '<div class="c-head">'
       +'<div class="c-sym">'+sym+'</div>'
       +'<div class="c-info">'
-        +'<div class="c-no">'+no+'番目の卦</div>'
-        +'<div class="c-name" style="font-size:16px;word-break:normal;">'+name+'</div>'
+        +'<div class="c-no">'+no+'番目の運勢</div>'
+        +'<div class="c-name" style="font-size:16px;word-break:keep-all;overflow-wrap:break-word;hyphens:none;">'+name+'</div>'
       +'</div>'
     +'</div>'
     +'<div class="cat-grid">'+catHtml+'</div>'
     +'<div class="fortune-full">'
       +'<div class="full-title" style="color:var(--gold);font-weight:700;">▸ 全体の運勢</div>'
-      +'<div class="fortune" style="font-size:14px;line-height:2.0;">'+txt+'</div>'
+      +'<div class="fortune" style="font-size:14px;line-height:2.0;word-break:keep-all;overflow-wrap:break-word;hyphens:none;">'+txt+'</div>'
     +'</div>';
 }
 
