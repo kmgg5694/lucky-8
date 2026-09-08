@@ -8,8 +8,36 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="행운역일진">
 <meta name="theme-color" content="#1a8880">
+<meta name="description" content="오늘의 행운역일진 — 천·지·인으로 보는 하루 운세. 김만기 주역 성명학 이름연구소.">
+<meta name="keywords" content="행운역일진,일진,주역,오늘의운세,김만기,이름연구소">
+<link rel="canonical" href="https://kmgg5694.github.io/lucky-8/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:site_name" content="김만기 이름연구소">
+<meta property="og:title" content="행운역일진 · 김만기 이름연구소">
+<meta property="og:description" content="오늘의 흐름을 천·지·인으로 짚는 일진 운세. 매일 한 번 확인해 보세요.">
+<meta property="og:url" content="https://kmgg5694.github.io/lucky-8/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="행운역일진 · 김만기 이름연구소">
+<meta name="twitter:description" content="오늘의 흐름을 천·지·인으로 짚는 일진 운세.">
 <link rel="manifest" href="./manifest.json">
-<title>행운역 일진</title>
+<title>행운역일진 · 김만기 이름연구소</title>
+<script>
+  window.GA_MEASUREMENT_ID = "G-G76ZRYRJQH";
+  (function () {
+    var id = window.GA_MEASUREMENT_ID;
+    if (!id || /X{4,}/.test(id)) return;
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + id;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag("js", new Date());
+    gtag("config", id);
+  })();
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
 
@@ -98,6 +126,10 @@ body{background:var(--bg);color:var(--text);
 .divider{text-align:center;color:var(--dim);font-size:12px;
   letter-spacing:2px;padding:12px 0;}
 
+
+.app-share{margin:12px;padding:14px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);text-align:center;}
+.app-share-t{font-size:14px;font-weight:700;color:var(--jade2);margin-bottom:8px;}
+.app-share-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
 .share-box{background:var(--bg2);border:1px solid var(--border);
   border-radius:var(--r);padding:14px;margin-bottom:12px;}
 .share-ttl{text-align:center;font-size:13px;color:var(--text);
@@ -246,6 +278,16 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;}
   <div class="guide-t" id="guideTitle"></div>
   <div class="guide-txt" id="guideText"></div>
   <div class="tips"><span class="tip" id="tipText"></span><br><span class="tip" id="tipText2"></span></div>
+</div>
+
+
+<div class="app-share" id="appShareBox">
+  <div class="app-share-t" id="appShareTtl">친구에게 이 앱 보내기</div>
+  <div class="app-share-row">
+    <button class="sbtn s-kk" type="button" id="appShareKK" onclick="shareAppKakao()">💬 카카오톡</button>
+    <button class="sbtn s-qr" type="button" id="appShareQR" onclick="showAppQR()">▦ 앱 QR</button>
+    <button class="sbtn s-cp" type="button" id="appShareCP" onclick="copyAppLink()">🔗 링크복사</button>
+  </div>
 </div>
 
 <div class="btn-row">
@@ -613,6 +655,10 @@ function updateUI() {
   if(el('secBon'))      el('secBon').textContent      = t.secBon;
   if(el('secByeon'))    el('secByeon').textContent    = t.secByeon;
   if(el('shareTtl'))    el('shareTtl').textContent    = t.shareTtl;
+  if(el('appShareTtl')){
+    var as={ko:'친구에게 이 앱 보내기',en:'Share this app with friends',ja:'このアプリを友人に送る',es:'Comparte esta app con amigos',hi:'इस ऐप को साझा करें'};
+    el('appShareTtl').textContent=as[_lang]||as.ko;
+  }
   if(el('sBtnKK'))      el('sBtnKK').textContent      = t.sBtnKK;
   if(el('sBtnFB'))      el('sBtnFB').textContent      = t.sBtnFB;
   if(el('sBtnCP'))      el('sBtnCP').textContent      = t.sBtnCP;
@@ -1149,13 +1195,55 @@ function _shareResultText(){
   parts.push('', note, resultShareUrl());
   return parts.join(nl);
 }
+
+function appHomeUrl(){
+  return location.origin + location.pathname.replace(/\/index\.html$/i,'/');
+}
+function _appInviteText(){
+  var nl=String.fromCharCode(10);
+  var t=UI[_lang]||UI.ko;
+  var title=(t.shareAppTitle||t.mainTitle||'행운역일진');
+  var line='오늘 당신의 컨디션이 궁금하면 눌러 보세요.';
+  if(_lang==='en') line='Curious about today\'s energy? Tap to check.';
+  else if(_lang==='ja') line='今日のコンディションが気になったら押してみてください。';
+  else if(_lang==='es') line='¿Curioso por tu energía de hoy? Pulsa para ver.';
+  else if(_lang==='hi') line='आज की ऊर्जा जाननी हो तो यहाँ दबाएँ।';
+  return title+nl+line+nl+appHomeUrl();
+}
+function shareAppKakao(){
+  var txt=_appInviteText();
+  var t=UI[_lang]||UI.ko;
+  var toast=t.shareToast||'📋 카카오톡에 붙여넣기!';
+  if(navigator.share){
+    navigator.share({title:t.shareAppTitle||t.mainTitle||'행운역일진',text:txt,url:appHomeUrl()}).catch(function(){ _doCopy(txt,toast); });
+  } else { _doCopy(txt,toast); }
+}
+function copyAppLink(){
+  var t=UI[_lang]||UI.ko;
+  _doCopy(_appInviteText(), t.copyToast||'✅ 복사되었습니다');
+}
+function showAppQR(){
+  if(location.protocol === 'file:'){
+    var t=UI[_lang]||UI.ko;
+    alert(t.qrHttpsAlert||'QR은 https에서만 사용할 수 있습니다.');
+    return;
+  }
+  var url=appHomeUrl();
+  document.getElementById('qrUrl').textContent=url;
+  document.getElementById('qrOv').classList.add('on');
+  var canvas=document.getElementById('qrCanvas');
+  drawQR(canvas,url,200);
+}
+
 function shareKakao(){
-  if(!bonKey) return;
+  if(!bonKey){ shareAppKakao(); return; }
   var txt=_shareResultText();
   var t=UI[_lang]||UI.ko;
   var appTitle=t.shareAppTitle||t.mainTitle||'행운역 일진';
   var toast=t.shareToast||'📋 카카오톡에 붙여넣기!';
-  if(navigator.share){ navigator.share({title:appTitle,text:txt}).catch(function(){ _doCopy(txt,toast); }); }
+  var inKakao=/KAKAOTALK/i.test(navigator.userAgent||'');
+  if(inKakao){ _doCopy(txt,toast); return; }
+  if(navigator.share){ navigator.share({title:appTitle,text:txt,url:resultShareUrl()}).catch(function(){ _doCopy(txt,toast); }); }
   else { _doCopy(txt,toast); }
 }
 function shareFB(){
