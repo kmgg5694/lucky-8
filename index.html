@@ -127,7 +127,6 @@ body{background:var(--bg);color:var(--text);
   hyphens:none;-webkit-hyphens:none;}
 .cat-item,.cat-text,.cat-name,.guide-txt,.m-body,.full-title,.footer,.ad-txt,.share-ttl,.app-share-t{
   word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;}
-/* Global mobile wrap: stop stray hyphen fragments on CJK / auto-translate */
 body,p,span,div,h1,h2,h3,h4,h5,h6,li,td,th,label,a,button{
   word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;-ms-hyphens:none;}
 .qr-url{word-break:break-all;overflow-wrap:anywhere;}
@@ -194,62 +193,12 @@ body,p,span,div,h1,h2,h3,h4,h5,h6,li,td,th,label,a,button{
 .lsw-btn{padding:4px 10px;font-size:11px;font-weight:700;border:1px solid #aaa;border-radius:4px;
   background:rgba(255,255,255,0.7);color:#555;cursor:pointer;font-family:inherit;}
 .lsw-btn.active{background:rgba(255,255,255,0.95);color:#111;border-color:#555;}
-
-
-/* ── ja 레이아웃 보호 (원칙3: CSS 먼저) ── */
-
 body.lang-es .cat-name{font-size:13px;}
 body.lang-es .cat-text{font-size:13px;}
 body.lang-es .fortune{font-size:14px;line-height:2.0;word-break:keep-all;overflow-wrap:break-word;hyphens:none;-webkit-hyphens:none;}
-
-.intro-sec{margin:12px;padding:14px 12px;background:var(--bg2);
-  border:1px solid var(--border);border-radius:var(--r);text-align:center;}
-.intro-ttl{font-size:14px;font-weight:700;color:var(--jade2);letter-spacing:2px;margin-bottom:10px;}
-.intro-langs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
-.intro-btn{padding:8px 10px;min-height:40px;font-size:12px;font-weight:700;
-  border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text);
-  cursor:pointer;font-family:inherit;}
-.intro-btn.on{background:var(--jade);color:#fff;border-color:var(--jade2);}
-.intro-player{position:relative;margin-top:12px;border-radius:8px;overflow:hidden;background:#000;}
-.intro-player video{
-  width:100%;height:auto;min-height:200px;max-height:360px;aspect-ratio:16/9;
-  object-fit:cover;object-position:center top;display:block;vertical-align:top;
-}
-.intro-player video::-webkit-media-controls-overlay-play-button,
-.intro-player video::-webkit-media-controls-start-playback-button,
-.intro-player video::-webkit-media-controls-play-button,
-.intro-player video::-webkit-media-controls-mute-button,
-.intro-player video::-webkit-media-controls-volume-control-container{
-  display:none !important;opacity:0 !important;pointer-events:none !important;
-}
-.intro-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none;}
-.intro-media-btn{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:0;padding:0;
-  background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;}
-.intro-media-btn svg{width:32px;height:32px;fill:currentColor;display:block;}
-.intro-media-btn .ic-sound{display:none;}
-.intro-media-btn[data-muted="0"] .ic-muted{display:none;}
-.intro-media-btn[data-muted="0"] .ic-sound{display:block;}
-.intro-caption{
-  position:absolute;left:0;right:0;bottom:8%;z-index:4;
-  overflow:hidden;pointer-events:none;height:1.15em;line-height:1.15;
-}
-.intro-caption-text{
-  display:inline-block;white-space:nowrap;padding-left:100%;
-  font-size:clamp(12px,3.2vw,16px);font-weight:700;letter-spacing:.01em;
-  color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.85);
-  animation:introCapScroll 8s linear infinite;will-change:transform;
-}
-@keyframes introCapScroll{
-  0%{transform:translateX(0)}
-  100%{transform:translateX(-100%)}
+100%{transform:translateX(-100%)}
 }
 @media (max-width:640px){
-  .intro-player video{min-height:220px;height:220px;max-height:240px;aspect-ratio:auto;}
-  .intro-caption{bottom:6%;height:1.1em;}
-  .intro-caption-text{font-size:clamp(11px,3.1vw,14px);}
-  .intro-media-btn{width:48px;height:48px;}
-  .intro-media-btn svg{width:24px;height:24px;}
 }
 </style>
 </head>
@@ -266,20 +215,6 @@ body.lang-es .fortune{font-size:14px;line-height:2.0;word-break:keep-all;overflo
   <div class="main-title" id="mainTitle"></div>
   <div class="sub-title" id="subtitle"></div>
   <div class="date-bar" id="dateBar"></div>
-</div>
-
-<div class="intro-sec">
-  <div class="intro-ttl" id="introTtl">소개영상</div>
-  <div class="intro-langs">
-    <button type="button" class="intro-btn" data-lang="ko" onclick="playIntro('ko')">한국어</button>
-    <button type="button" class="intro-btn" data-lang="en" onclick="playIntro('en')">English</button>
-    <button type="button" class="intro-btn" data-lang="ja" onclick="playIntro('ja')">日本語</button>
-    <button type="button" class="intro-btn" data-lang="es" onclick="playIntro('es')">Español</button>
-    <button type="button" class="intro-btn" data-lang="hi" onclick="playIntro('hi')">हिन्दी</button>
-  </div>
-  <div class="intro-player" id="introPlayerWrap">
-    <video id="introVideo" playsinline muted autoplay preload="auto"></video>
-  </div>
 </div>
 
 <div class="guide">
@@ -632,11 +567,6 @@ function lockCountryUI(lang) {
     b.style.display = keep ? '' : 'none';
     b.classList.toggle('active', keep);
   });
-  document.querySelectorAll('.intro-btn').forEach(function(b){
-    var keep = (b.getAttribute('data-lang') === lang);
-    b.style.display = keep ? '' : 'none';
-    b.classList.toggle('on', keep);
-  });
 }
 
 function setLang(lang) {
@@ -720,7 +650,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 
 // ── EN 카드 렌더 ─────────────────────────────
-/* Strip soft-hyphens / stray dash fragments that break on mobile wrap & auto-translate */
 function _cleanWrapText(t){
   if(t==null) return '';
   return String(t)
@@ -1561,97 +1490,7 @@ function setIntroCaption(wrap, lang) {
   cap.appendChild(span);
 }
 
-function bindIntroUnmute(wrap, v) {
-  if (!wrap || !v) return;
-  v.controls = false;
-  v.removeAttribute('controls');
-  var bar = wrap.querySelector('.intro-overlay');
-  if (!bar) {
-    bar = document.createElement('div');
-    bar.className = 'intro-overlay';
-    bar.innerHTML =
-      '<button type="button" class="intro-media-btn intro-mute" aria-label="소리 켜기">' +
-      '<svg class="ic-muted" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>' +
-      '<svg class="ic-sound" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>' +
-      '</button>';
-    wrap.appendChild(bar);
-  }
-  var muteBtn = bar.querySelector('.intro-mute');
-  function sync() {
-    muteBtn.setAttribute('data-muted', v.muted ? '1' : '0');
-    muteBtn.setAttribute('aria-label', v.muted ? '소리 켜기' : '음소거');
-  }
-  if (!muteBtn.getAttribute('data-wired')) {
-    muteBtn.setAttribute('data-wired', '1');
-    muteBtn.addEventListener('click', function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      v.muted = !v.muted;
-      if (!v.muted && v.paused) {
-        var p = v.play();
-        if (p && p.catch) p.catch(function () {});
-      }
-      sync();
-    });
-  }
-  if (!v.getAttribute('data-unmute-wired')) {
-    v.setAttribute('data-unmute-wired', '1');
-    v.addEventListener('volumechange', sync);
-  }
-  sync();
-}
-
-function playIntro(lang) {
-  var files = {
-    ko: '행운역일진_소개_한국어.mp4',
-    en: '행운역일진_소개_영어.mp4',
-    ja: '행운역일진_소개_일본어.mp4',
-    es: '행운역일진_소개_스페인어.mp4',
-    hi: '행운역일진_소개_힌디어.mp4'
-  };
-  var titles = {
-    ko: '소개영상',
-    en: 'Intro Video',
-    ja: '紹介動画',
-    es: 'Video de introducción',
-    hi: 'परिचय वीडियो'
-  };
-  lang = lang || _lang || 'ko';
-  if (typeof lockCountryUI === 'function') lockCountryUI(lang);
-  var wrap = document.getElementById('introPlayerWrap');
-  var v = document.getElementById('introVideo');
-  if (!wrap || !v || !files[lang]) return;
-  var ttl = document.getElementById('introTtl');
-  if (ttl) ttl.textContent = titles[lang] || titles.ko;
-  var btns = document.querySelectorAll('.intro-btn');
-  for (var i = 0; i < btns.length; i++) {
-    btns[i].classList.toggle('on', btns[i].getAttribute('data-lang') === lang);
-  }
-  v.muted = true;
-  v.playsInline = true;
-  v.setAttribute('playsinline', '');
-  v.setAttribute('webkit-playsinline', '');
-  wrap.classList.remove('hidden');
-  bindIntroUnmute(wrap, v);
-  setIntroCaption(wrap, lang);
-  function start() {
-    v.muted = true;
-    var p = v.play();
-    if (p && p.catch) p.catch(function(){});
-  }
-  if (v.getAttribute('data-lang') !== lang) {
-    v.setAttribute('data-lang', lang);
-    v.src = 'https://kmgg5694.github.io/nameanalyz/videos/' + encodeURIComponent(files[lang]);
-    v.onloadeddata = start;
-  } else {
-    try { v.currentTime = 0; } catch (e) {}
-    start();
-  }
-}
-
 restoreResultFromUrl();
-playIntro(typeof _lang === 'string' ? _lang : 'ko');
-
 </script>
 <script src="./pwa-install.js"></script>
 </body>
